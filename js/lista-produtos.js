@@ -1,12 +1,32 @@
+let listagemProduto = [];
 const divListagem = document.getElementById('listagem');
 const listaGenero = document.getElementById('genero');
+const listaOrdenacao = document.getElementById('ordem');
+const pesquisa = document.getElementById('search');
+const btnSearch = document.getElementById('btn-search');
+
+btnSearch.addEventListener('click', () => {
+  let textoPesquisa = pesquisa.value;
+
+});
+
+const pesquisaProduto = (textoPesquisa) => {
+  divListagem.innerHTML = ''
+  listagemProduto.filter((produto) => produto.title.contains(textoPesquisa));
+}
 
 listaGenero.addEventListener('change', async (event) => {
   let genero = event.target.value;                                              //capturando o valor do elemento selecionado          
-  await buscaProdutos(genero);                                              //Busca produto é assincrona, necessita do async/await
+  await buscaProdutos(genero);                                              //Uso do async/wait para garantir o carregamento completo do array
 });
 
-const listaProduto = (srcImagem, descricaoPrduto, precoDoProduto) => {
+listaOrdenacao.addEventListener('change', async (event) => {
+  let ordem = event.target.value;
+  await ordenacaoPreco(ordem);                                                    //Uso do async /wait para garantir o carregamento completo do array
+});
+
+
+const listaProduto = (srcImagem, descricaoPrduto, precoDoProduto) => { //Criando elementos do DOM
   //Criando elementos
   const infoProduto = document.createElement('div');
   const imagem = document.createElement('img');
@@ -34,12 +54,27 @@ const listaProduto = (srcImagem, descricaoPrduto, precoDoProduto) => {
   divListagem.appendChild(infoProduto);
 }
 
-const buscaProdutos = async (genero) => {
-  divListagem.innerHTML = '';
+const ordenacaoPreco = (ordem) => {
+  if ((ordem === 'menor-preco')) {
+    listagemProduto.sort((a, b) => a.price - b.price)
+  };
+
+  if ((ordem === 'maior-preco')) {
+    listagemProduto.sort((a, b) => b.price - a.price)
+  };
+  preencheListaProdutos();
+}
+
+const buscaProdutos = async (genero) => {    //Poupulando o array com info das API
   const listaDeProdutos = await fetch(`https://api.mercadolibre.com/sites/MLB/search?q=${genero}`);
   const listaDeProdutosJson = await listaDeProdutos.json();
-  const DadosProduto = listaDeProdutosJson.results;
-  DadosProduto.forEach((produto) => {
+  listagemProduto = listaDeProdutosJson.results;
+  preencheListaProdutos();
+}
+
+preencheListaProdutos = () => {                   //Percorrrendo o array e inserindo os elementso da API  no DOM
+  divListagem.innerHTML = '';
+  listagemProduto.forEach((produto) => {
     const { thumbnail, title, price } = produto;
     listaProduto(thumbnail, title, price); //Inserindo informaçõea da API no DOM
   });//ForEach

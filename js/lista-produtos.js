@@ -1,6 +1,11 @@
 const divListagem = document.getElementById('listagem');
 const listaGenero = document.getElementById('genero');
 
+listaGenero.addEventListener('change', async (event) => {
+  let genero = event.target.value;                                              //capturando o valor do elemento selecionado          
+  await buscaProdutos(genero);                                              //Busca produto é assincrona, necessita do async/await
+});
+
 const listaProduto = (srcImagem, descricaoPrduto, precoDoProduto) => {
   //Criando elementos
   const infoProduto = document.createElement('div');
@@ -9,7 +14,7 @@ const listaProduto = (srcImagem, descricaoPrduto, precoDoProduto) => {
   const precoProduto = document.createElement('div');
 
   //Adicionando classes
-  infoProduto.classList.add('col-md-4'); //Usa o classList.add quando o elemento recebe mais de uma classe
+  infoProduto.classList.add('col-md-3'); //Usa o classList.add quando o elemento recebe mais de uma classe
   infoProduto.classList.add('info-produto');
   imagem.classList.add('rounded');
   imagem.classList.add('img_produto');
@@ -20,7 +25,7 @@ const listaProduto = (srcImagem, descricaoPrduto, precoDoProduto) => {
   //Recebendo os parâmetros
   imagem.src = srcImagem;
   tituloProduto.innerText = descricaoPrduto.slice(0, 37) + '...';
-  precoProduto.innerText = precoDoProduto;
+  precoProduto.innerText = Intl.NumberFormat('pt-br', { style: 'currency', currency: 'BRL' }).format(precoDoProduto);// Moeda Local
 
   //Adicionando elementos ao DOM
   infoProduto.appendChild(imagem);
@@ -30,6 +35,7 @@ const listaProduto = (srcImagem, descricaoPrduto, precoDoProduto) => {
 }
 
 const buscaProdutos = async (genero) => {
+  divListagem.innerHTML = '';
   const listaDeProdutos = await fetch(`https://api.mercadolibre.com/sites/MLB/search?q=${genero}`);
   const listaDeProdutosJson = await listaDeProdutos.json();
   const DadosProduto = listaDeProdutosJson.results;

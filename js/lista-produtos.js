@@ -7,16 +7,19 @@ const btnSearch = document.getElementById('btn-search');
 
 btnSearch.addEventListener('click', () => {
   let textoPesquisa = pesquisa.value;
-
+  pesquisaProduto(textoPesquisa);
 });
 
 const pesquisaProduto = (textoPesquisa) => {
-  divListagem.innerHTML = ''
-  listagemProduto.filter((produto) => produto.title.contains(textoPesquisa));
+  listagemProduto = listagemProduto.filter((produto) => produto.title.toUpperCase().includes(textoPesquisa.toUpperCase()));
+  //uso do uppercase para garatir que o termos buscados tem o mesmo formato
+  preencheListaProdutos();
 }
 
 listaGenero.addEventListener('change', async (event) => {
   let genero = event.target.value;                                              //capturando o valor do elemento selecionado          
+  pesquisa.value = '';                                                                        //limpando os filtros de pesquisa após trocar o genero
+  listaOrdenacao.value = 'relevancia';
   await buscaProdutos(genero);                                              //Uso do async/wait para garantir o carregamento completo do array
 });
 
